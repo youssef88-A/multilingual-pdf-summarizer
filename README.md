@@ -2,7 +2,7 @@
 
 A production-ready multilingual PDF summarization service supporting English, French, and Arabic.
 
-## 🚀 Features
+##  Features
 
 - **Multilingual Support**: English, French, Arabic text extraction and summarization
 - **Hybrid PDF Extraction**: Combines pdfplumber with OCR fallback for scanned documents
@@ -11,7 +11,7 @@ A production-ready multilingual PDF summarization service supporting English, Fr
 - **CI/CD Pipeline**: Automated testing and deployment
 - **Model Optimization**: ONNX/TensorRT conversion for faster inference
 
-## 🛠️ Quick Start
+##  Quick Start
 
 ### Using Docker (Recommended)
 
