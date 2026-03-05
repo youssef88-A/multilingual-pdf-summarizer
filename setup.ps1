@@ -14,11 +14,15 @@ Write-Host "✅ $pythonVersion"
 
 # Check CUDA availability
 Write-Host "`n🎮 Checking CUDA availability..." -ForegroundColor Yellow
-$cudaCheck = python -c "import torch; print(torch.cuda.is_available())" 2>$null
-if ($cudaCheck -eq "True") {
-    Write-Host "✅ CUDA available - GPU acceleration enabled" -ForegroundColor Green
-} else {
-    Write-Host "⚠️  CUDA not available - using CPU (slower)" -ForegroundColor Yellow
+try {
+    $cudaCheck = python -c "import torch; print(torch.cuda.is_available())" 2>$null
+    if ($cudaCheck -eq "True") {
+        Write-Host "✅ CUDA available - GPU acceleration enabled" -ForegroundColor Green
+    } else {
+        Write-Host "⚠️  CUDA not available - using CPU (slower)" -ForegroundColor Yellow
+    }
+} catch {
+    Write-Host "⚠️  Could not check CUDA (PyTorch might not be installed yet)" -ForegroundColor Yellow
 }
 
 # Create virtual environment
@@ -33,11 +37,15 @@ Write-Host "✅ Virtual environment created"
 # Activate virtual environment
 Write-Host "`n🔄 Activating virtual environment..." -ForegroundColor Yellow
 & .\venv\Scripts\Activate.ps1
+if ($LASTEXITCODE -ne 0) {
+    Write-Host "❌ Failed to activate virtual environment" -ForegroundColor Red
+    exit 1
+}
 Write-Host "✅ Virtual environment activated"
 
 # Install dependencies
 Write-Host "`n📦 Installing dependencies..." -ForegroundColor Yellow
-pip install --upgrade pip
+python -m pip install --upgrade pip
 pip install -r requirements.txt
 if ($LASTEXITCODE -ne 0) {
     Write-Host "❌ Failed to install dependencies" -ForegroundColor Red
@@ -51,8 +59,7 @@ $directories = @(
     "models",
     "logs",
     "temp",
-    "uploads",
-    "tests/__pycache__"
+    "uploads"
 )
 
 foreach ($dir in $directories) {
@@ -65,31 +72,40 @@ Write-Host "✅ Directories created"
 
 # Download NLTK data
 Write-Host "`n📚 Downloading NLTK data..." -ForegroundColor Yellow
-python -c "import nltk; nltk.download('punkt'); nltk.download('punkt_tab')"
+python -c "import nltk; nltk.download('punkt'); nltk.download('punkt_tab')" 2>$null
 Write-Host "✅ NLTK data downloaded"
 
 # Create .env file if not exists
 if (-not (Test-Path ".env")) {
     Write-Host "`n🔐 Creating .env file from template..." -ForegroundColor Yellow
-    Copy-Item ".env.example" -Destination ".env"
-    Write-Host "✅ .env file created. Please update with your credentials."
+    if (Test-Path ".env.example") {
+        Copy-Item ".env.example" -Destination ".env"
+        Write-Host "✅ .env file created. Please update with your credentials."
+    } else {
+        Write-Host "⚠️  .env.example not found, skipping .env creation" -ForegroundColor Yellow
+    }
 }
 
 # Run tests
 Write-Host "`n🧪 Running tests..." -ForegroundColor Yellow
-pytest tests/ -v
-if ($LASTEXITCODE -ne 0) {
-    Write-Host "⚠️  Some tests failed. Check the output above." -ForegroundColor Yellow
+if (Test-Path "tests") {
+    pytest tests/ -v
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host "⚠️  Some tests failed. Check the output above." -ForegroundColor Yellow
+    } else {
+        Write-Host "✅ All tests passed!" -ForegroundColor Green
+    }
 } else {
-    Write-Host "✅ All tests passed!" -ForegroundColor Green
+    Write-Host "⚠️  Tests directory not found, skipping tests" -ForegroundColor Yellow
 }
 
 # Final instructions
 Write-Host "`n✨ Setup complete!" -ForegroundColor Green
 Write-Host "`nNext steps:" -ForegroundColor Cyan
-Write-Host "  1. Update the .env file with your credentials"
+Write-Host "  1. Update the .env file with your credentials (if created)"
 Write-Host "  2. Run the API: uvicorn app.main:app --reload"
 Write-Host "  3. Or run with Docker: docker-compose up"
 Write-Host "  4. Access the API at: http://localhost:8000/docs"
+Write-Host "  5. Or use the run script: .\run.ps1 -Mode dev"
 
 Write-Host "`nHappy coding! 🎉" -ForegroundColor Magenta
