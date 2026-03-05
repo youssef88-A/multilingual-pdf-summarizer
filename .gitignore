@@ -1,0 +1,74 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+.python-version
+
+# Virtual Environment
+conda-env/
+conda./
+.conda/
+myenv/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Jupyter Notebooks
+.ipynb_checkpoints/
+*.ipynb
+
+# Model files
+*.pt
+*.pth
+*.bin
+*.onnx
+models/
+
+# Data
+*.pdf
+*.txt
+*.csv
+data/
+temp/
+
+# Logs
+logs/
+*.log
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.coverage.*
+*.cover
+*.py,cover
+
+# Docker
+*.tar
+*.tgz
+docker-compose.override.yml
+
+# Local environment files
+.env
+.env.local
+.env.*.local
+
+# Uploads
+uploads/
+tmp/
+temp/
+
+# OS
+.DS_Store
+Thumbs.db

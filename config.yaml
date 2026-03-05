@@ -1,0 +1,47 @@
+# Configuration file for multilingual summarizer
+
+model:
+  name: "csebuetnlp/mT5_multilingual_XLSum"
+  device: "cuda"  # or "cpu"
+  max_length: 300
+  min_length: 50
+  num_beams: 4
+  no_repeat_ngram_size: 3
+  length_penalty: 1.0
+  repetition_penalty: 1.5
+  early_stopping: true
+
+api:
+  host: "0.0.0.0"
+  port: 8000
+  workers: 4
+  timeout: 300
+  max_file_size: 52428800  # 50MB in bytes
+
+pdf_processing:
+  max_pages: 50
+  ocr_dpi: 300
+  chunk_size: 2000
+  languages: ["eng", "fra", "ara"]
+
+languages:
+  supported: ["en", "fr", "ar"]
+  default: "en"
+  mapping:
+    en: "english"
+    fr: "french"
+    ar: "arabic"
+
+paths:
+  temp_dir: "/tmp/pdf_summarizer"
+  model_cache: "./models"
+  upload_dir: "./uploads"
+
+logging:
+  level: "INFO"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  file: "logs/app.log"
+
+monitoring:
+  metrics_enabled: true
+  prometheus_port: 9090
